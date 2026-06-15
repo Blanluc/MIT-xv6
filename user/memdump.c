@@ -14,9 +14,9 @@ main(int argc, char *argv[])
     
     printf("Example 2:\n");
     memdump("S", "a string");
-    
+
     printf("Example 3:\n");
-    char *s = "another";
+    char *s = "another"; // s is a pointer, initialized to point to a string constant
     memdump("s", (char *) &s);
 
     struct sss {
@@ -60,6 +60,42 @@ main(int argc, char *argv[])
 void
 memdump(char *fmt, char *data)
 {
+  //printf("%s\n","heey");
   // Your code here.
+  char *ptr=data;
+  for(int i = 0; fmt[i]; i++){
+    if (fmt[i]=='i'){ // print the next 4 bytes of the data as a 32-bit integer, in decimal
+      printf("%d\n",(*(uint32 *)ptr)); // interesting
+      ptr+=sizeof(uint32); // 4 bytes
+    }
+    if (fmt[i]=='p'){ // print the next 8 bytes of the data as a 64-bit integer, in hex.
+      printf("%lx\n",(*(uint64 *)ptr));
+      ptr+=sizeof(uint64); // 8 bytes
+    }
+    if (fmt[i]=='h'){ // print the next 2 bytes of the data as a 16-bit integer, in decimal.
+      printf("%d\n",(*(uint16 *)ptr));
+      ptr+=sizeof(uint16); // 2 bytes
+    }
+    if (fmt[i]=='c'){ // print the next 1 byte of the data as an 8-bit ASCII character.
+      printf("%c\n",(uint8)(*ptr));
+      //ptr+=sizeof(uint8);
+      ptr+=sizeof(char); // 1 byte
+    }
+    if (fmt[i]=='s'){ // the next 8 bytes of the data contain a 64-bit pointer to a C string; print the string.
+      char *strptr = *(char **)ptr;
+        while(*strptr != '\0'){
+          printf("%c", *strptr); // im so fakin guuud
+          strptr++;
+          
+        }
+        ptr+=sizeof(char *); // 8 bytes
+        printf("\n");
+    }
+    if (fmt[i]=='S'){ // the rest of the data contains the bytes of a null-terminated C string; print the string.
+      printf("%s\n",ptr);
+      ptr+=sizeof(char);
+    }
+    
+  }
 
 }

@@ -27,14 +27,9 @@ sixfive(int fd)
         if (string_count==0 && !(c>=48 && c<=57)){ // if beginning of number and not number
             // printf("here\n");
             if (strchr(special,*(&c-1)+c)!=0){
-                // printf("Yes\n");
-                // printf("Special char is: %c %c\n",*(&c-1),c);
                 string_valid=1;
             } else{
-                // printf("NO\n");
-                // printf("char is: %c %c\n",*(&c-1),c);
                 string_valid=0;
-
             }
         }
 
