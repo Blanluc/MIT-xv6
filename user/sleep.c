@@ -5,12 +5,12 @@
 int
 main(int argc, char *argv[])
 {
-  
   if(argc != 2){
     fprintf(2, "Usage: sleep (time)...\n");
     exit(1);
   }
   int i=atoi(argv[1]);
+  //printf("i = %d \n",i);
 
   pause(i);
 

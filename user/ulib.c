@@ -59,7 +59,7 @@ memset(void *dst, int c, uint n)
 char*
 strchr(const char *s, char c)
 {
-  for(; *s; s++)
+  for(; *s; s++) // continues as long as s != '\0'
     if(*s == c)
       return (char*)s;
   return 0;
