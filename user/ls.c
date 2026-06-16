@@ -57,7 +57,8 @@ ls(char *path)
     strcpy(buf, path);
     p = buf+strlen(buf);
     *p++ = '/';
-    while(read(fd, &de, sizeof(de)) == sizeof(de)){
+    printf("p is : %s\n",buf);
+    while(read(fd, &de, sizeof(de)) == sizeof(de)){ // scan
       if(de.inum == 0)
         continue;
       memmove(p, de.name, DIRSIZ);
