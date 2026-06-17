@@ -3,6 +3,7 @@
 #include "user/user.h"
 #include "kernel/fs.h"
 #include "kernel/fcntl.h"
+#include "kernel/param.h"
 
 // Use recursion to allow find to descend into sub-directories.
 
@@ -34,7 +35,7 @@ fmtname(char *path) // i think it converts to name
 // if dir => recursion
 
 void
-find(char *path,char *name)
+find(char *path,char *name,char *funct,char **args)
 {
   char buf[512], *p;
   int fd; // file descriptor
@@ -100,7 +101,28 @@ find(char *path,char *name)
       }
       
       if (strcmp(name_var,name)==0){
-            printf("%s/%s\n",path,name);
+            if (args && funct){
+                char *run_args[MAXARG];
+                int j = 0;
+                while(args[j]) {
+                    run_args[j] = args[j];
+                    j++;
+                }
+                run_args[j++] = buf;  // append found path
+                run_args[j] = 0;
+                if (fork()==0){
+                    exec(funct,run_args);
+                    exit(1);
+                } else{
+                    printf("%s/%s\n",path,name);
+                    wait(0);
+
+                }
+            } else{
+                printf("%s/%s\n",path,name);
+            }
+            
+            
         } else{
            
         }
@@ -112,7 +134,7 @@ find(char *path,char *name)
             
             //*p++ = *name_var; // buf already contains the full path
             //printf(" moving to %s\n",buf);
-            find(buf,name);
+            find(buf,name,funct,args);
 
         } else{
             //printf("no\n");
@@ -137,15 +159,26 @@ main(int argc, char *argv[])
     exit(0);
   } 
   if(argc == 2){
-    find(".",argv[1]); // i dont think i need to pass "."
+    find(".",argv[1],0,0); // i dont think i need to pass "."
     exit(0);
   } 
   if(argc == 3){
-    find(argv[1],argv[2]); // i dont think i need to pass "."
+    find(argv[1],argv[2],0,0); // i dont think i need to pass "."
     exit(0);
   } 
-  
-//   for(i=1; i<argc; i++)
-//     ls(argv[i]);
-  
+  // int exec(char *file, char *argv[])
+  // Load a file and execute it with arguments; only returns if error.
+  if(argc >= 4){
+    if (strcmp("-exec",argv[3])==0){
+        //find(argv[1],argv[2],0,0);
+        //printf("Find called with exec\n");
+        char *file=argv[4];
+        find(argv[1],argv[2],file,argv+4);
+        //exec(file,argv+4);
+
+
+        
+    }
+}
+    
 }
