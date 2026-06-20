@@ -28,7 +28,7 @@ main()
     iinit();         // inode table
     fileinit();      // file table
     virtio_disk_init(); // emulated hard disk
-    userinit();      // first user process
+    userinit();      // first user process // 1st proc
     __sync_synchronize();
     started = 1;
   } else {

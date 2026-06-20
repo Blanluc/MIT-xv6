@@ -1,0 +1,35 @@
+Q : Looking at the backtrace output, which function called syscall?
+A : usertrap()
+
+Q : What is the value of p->trapframe->a7 and what does that value represent? (Hint: look at user/init.c, the first user program xv6 starts, and its compiled assembly user/init.asm.)
+A : p p->trapframe->a7 gives $2 =15
+
+Q : What was the previous mode that the CPU was in?
+A : (200000022)16 = (001000000000000000000000000000100010)2
+    SPP (bit 8) = 0 → previous mode was user mode
+    SPIE (bit 5) = 1 → interrupts were enabled in the previous mode
+    SIE (bit 1) = 1 → supervisor interrupts currently enabled
+    the CPU was previously in user mode, which makes sense since init issued an ecall from user space to invoke the open syscall.
+
+Q : Write down the assembly instruction the kernel is panicing at. Which register corresponds to the variable num?
+A : scause=0xd sepc=0x80001d08 stval=0x0
+    kernel.asm :
+        //num = p->trapframe->a7;
+        num = * (int *) 0; // added to test
+        80001d08:	00002683          	lw	a3,0(zero) # 0 <_entry-0x80000000>
+    So num corresponds to a3
+
+
+Q : Why does the kernel crash? Hint: look at figure 3-3 in the text; is address 0 mapped in the kernel address space? Is that confirmed by the value in scause above?
+A : scause=0xd => d = 13 : Load page fault
+    address 0 is not mapped!
+    The scause register indicates the type of the page fault and the stval register contains the address
+    that couldn’t be translated.
+    scause=0xd sepc=0x80001d08 stval=0x0
+
+    Looking at figure 3-3, the kernel virtual address space starts at 0 on the left side but there are no 
+    mappings at address 0 — the lowest mapped region is PLIC at 0x0C000000. So address 0x0 is indeed 
+    unmapped in the kernel virtual address space.
+
+Q : What is the name of the process that was running when the kernel paniced? What is its process id (pid)?
+A : It's init and the pid is 1.
