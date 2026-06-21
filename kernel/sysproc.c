@@ -110,15 +110,18 @@ sys_uptime(void)
 uint64
 sys_interpose(void)
 {
-  char path[MAXPATH];
+  char path[MAXPATH]; // allowed pathname
   int mask;
   argint(0, &mask);
+
   if(argstr(1, path, MAXPATH) < 0) {
     return -1;
   }
 
-  // set the mask
+  // set the mask & path
   myproc()->mask=mask;
+  strncpy(myproc()->path,path,MAXPATH);
+
 
   return 0;
 }

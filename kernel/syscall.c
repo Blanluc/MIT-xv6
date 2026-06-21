@@ -7,6 +7,7 @@
 #include "syscall.h"
 #include "defs.h"
 
+
 // Fetch the uint64 at addr from the current process.
 int
 fetchaddr(uint64 addr, uint64 *ip)
@@ -136,13 +137,16 @@ syscall(void)
 {
   int num;
   struct proc *p = myproc();
+  char path[MAXPATH];
+
+  argstr(0, path, MAXPATH);
 
   num = p->trapframe->a7;
   // num = * (int *) 0; // added to test
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
     // Use num to lookup the system call function for num, call it,
     // and store its return value in p->trapframe->a0
-    if (!(p->mask & (1 << num))){ // pass only if mask wasn't set
+    if (!(p->mask & (1 << num)) || ((num == 7 || num == 15)&&(strncmp(path,p->path,MAXPATH)==0))){ // pass only if mask wasn't set
       p->trapframe->a0 = syscalls[num]();
     } else{
       //printf("(1 << num) = %d ",(1 << num));

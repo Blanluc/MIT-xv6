@@ -94,6 +94,7 @@ struct proc {
 
   // added
   int mask;
+  char path[MAXPATH];
 
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
